@@ -12,7 +12,7 @@ export 'models/get_events_params.dart';
 abstract class CalendarService {
   Future<Result<List<DeviceCalendar>>> get calendars;
 
-  Future<Result<List<DeviceEvent>>> getEventsFormCalendar(
+  Future<Result<List<CalendarEvent>>> getEventsFromCalendar(
     String calendarId,
     GetEventsParams getEventsParams,
   );
@@ -40,14 +40,16 @@ class _CalendarServiceImpl implements CalendarService {
   }
 
   @override
-  Future<Result<List<DeviceEvent>>> getEventsFormCalendar(
+  Future<Result<List<CalendarEvent>>> getEventsFromCalendar(
       String calendarId, GetEventsParams getEventsParams) async {
+    assert (getEventsParams != null);
+
     return _callFuture(
       _deviceCalendarPlugin.retrieveEvents(
           calendarId, getEventsParams.retrieveEventsParams),
       mappingFunction: (List<c.Event> events) {
         return events.map((c.Event event) {
-          return DeviceEvent.from(event);
+          return CalendarEvent.from(event);
         }).toList();
       },
     );

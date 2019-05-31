@@ -2,10 +2,10 @@ import 'dart:async';
 
 import 'package:async/async.dart';
 import 'package:device_calendar_example/calendar_service/calendar_service.dart';
-import 'package:device_calendar_example/pages/main/states/calendars_state.dart';
+import 'package:device_calendar_example/pages/calendars/states/calendars_state.dart';
 
-abstract class MainPageBloc {
-  static MainPageBloc build() => _MainPageBlocImpl(CalendarService.build());
+abstract class CalendarsPageBloc {
+  static CalendarsPageBloc build() => _CalendarsPageBlocImpl(CalendarService.build());
 
   Stream<CalendarsState> get calendarsState;
 
@@ -14,8 +14,8 @@ abstract class MainPageBloc {
   void dispose();
 }
 
-class _MainPageBlocImpl implements MainPageBloc {
-  _MainPageBlocImpl(this.calendarService);
+class _CalendarsPageBlocImpl implements CalendarsPageBloc {
+  _CalendarsPageBlocImpl(this.calendarService);
 
   final CalendarService calendarService;
 
