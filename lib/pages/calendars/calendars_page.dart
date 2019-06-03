@@ -1,6 +1,7 @@
 import 'package:device_calendar_example/calendar_service/calendar_service.dart';
-import 'package:device_calendar_example/pages/main/main_page_bloc.dart';
-import 'package:device_calendar_example/pages/main/states/calendars_state.dart';
+import 'package:device_calendar_example/pages/calendars/calendars_page_bloc.dart';
+import 'package:device_calendar_example/pages/calendars/states/calendars_state.dart';
+import 'package:device_calendar_example/pages/events/events_page.dart';
 import 'package:flutter/material.dart';
 
 void main() => runApp(MyApp());
@@ -13,22 +14,22 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: MyHomePage(title: 'Calendars List'),
+      home: CalendarsPage(title: 'Calendars List'),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
+class CalendarsPage extends StatefulWidget {
+  CalendarsPage({Key key, this.title}) : super(key: key);
 
   final String title;
-  final MainPageBloc _mainPageBloc = MainPageBloc.build();
+  final CalendarsPageBloc _mainPageBloc = CalendarsPageBloc.build();
 
   @override
-  _MyHomePageState createState() => _MyHomePageState();
+  _CalendarsPageState createState() => _CalendarsPageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _CalendarsPageState extends State<CalendarsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -95,6 +96,7 @@ class _MyHomePageState extends State<MyHomePage> {
               child: InkWell(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: <Widget>[
                     Padding(
                       padding: const EdgeInsets.all(16),
@@ -105,7 +107,13 @@ class _MyHomePageState extends State<MyHomePage> {
                   ],
                 ),
                 onTap: () {
-                  print('selected: $index');
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute<EventsPage>(
+                      builder: (BuildContext context) =>
+                          EventsPage('Events', calendar.id),
+                    ),
+                  );
                 },
               ),
             ),

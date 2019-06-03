@@ -12,7 +12,7 @@ export 'models/get_events_params.dart';
 abstract class CalendarService {
   Future<Result<List<DeviceCalendar>>> get calendars;
 
-  Future<Result<List<DeviceEvent>>> getEventsFormCalendar(
+  Future<Result<List<CalendarEvent>>> getEventsFromCalendar(
     String calendarId,
     GetEventsParams getEventsParams,
   );
@@ -29,6 +29,12 @@ class _CalendarServiceImpl implements CalendarService {
 
   @override
   Future<Result<List<DeviceCalendar>>> get calendars async {
+    try {
+      await _getPermissionsOrThrow();
+    } on Exception catch (e) {
+      return Result<List<DeviceCalendar>>.error(e);
+    }
+
     return _callFuture(
       _deviceCalendarPlugin.retrieveCalendars(),
       mappingFunction: (List<c.Calendar> calendars) {
@@ -40,14 +46,22 @@ class _CalendarServiceImpl implements CalendarService {
   }
 
   @override
-  Future<Result<List<DeviceEvent>>> getEventsFormCalendar(
+  Future<Result<List<CalendarEvent>>> getEventsFromCalendar(
       String calendarId, GetEventsParams getEventsParams) async {
+    assert(getEventsParams != null);
+
+    try {
+      await _getPermissionsOrThrow();
+    } on Exception catch (e) {
+      return Result<List<CalendarEvent>>.error(e);
+    }
+
     return _callFuture(
       _deviceCalendarPlugin.retrieveEvents(
           calendarId, getEventsParams.retrieveEventsParams),
       mappingFunction: (List<c.Event> events) {
         return events.map((c.Event event) {
-          return DeviceEvent.from(event);
+          return CalendarEvent.from(event);
         }).toList();
       },
     );
@@ -55,11 +69,23 @@ class _CalendarServiceImpl implements CalendarService {
 
   @override
   Future<Result<String>> createOrUpdateEvent(c.Event event) async {
+    try {
+      await _getPermissionsOrThrow();
+    } on Exception catch (e) {
+      return Result<String>.error(e);
+    }
+
     return _callFuture(_deviceCalendarPlugin.createOrUpdateEvent(event));
   }
 
   @override
   Future<Result<bool>> deleteEvent(String calendarId, String eventId) async {
+    try {
+      await _getPermissionsOrThrow();
+    } on Exception catch (e) {
+      return Result<bool>.error(e);
+    }
+
     return _callFuture(_deviceCalendarPlugin.deleteEvent(calendarId, eventId));
   }
 
@@ -72,21 +98,16 @@ class _CalendarServiceImpl implements CalendarService {
       assert(mappingFunction != null);
     }
 
-    try {
-      await _getPermissionsOrThrow();
-      final c.Result<InputType> result = await futureMethod;
+    final c.Result<InputType> result = await futureMethod;
 
-      if (result.isSuccess && result.data != null) {
-        final OutputType output = (InputType == OutputType)
-            ? result.data
-            : mappingFunction(result.data);
+    if (result.isSuccess && result.data != null) {
+      final OutputType output = (InputType == OutputType)
+          ? result.data
+          : mappingFunction(result.data);
 
-        return Result<OutputType>.value(output);
-      } else {
-        return Result<OutputType>.error(result.errorMessages.join('\n'));
-      }
-    } on Exception catch (e) {
-      return Result<OutputType>.error(e);
+      return Result<OutputType>.value(output);
+    } else {
+      return Result<OutputType>.error(result.errorMessages.join('\n'));
     }
   }
 

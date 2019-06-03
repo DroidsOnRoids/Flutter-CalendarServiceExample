@@ -1,9 +1,9 @@
 import 'package:device_calendar/device_calendar.dart';
 import 'package:device_calendar_example/calendar_service/models/event_attendee.dart';
 
-class DeviceEvent {
+class CalendarEvent {
 
-  DeviceEvent(
+  CalendarEvent(
       this.calendarId, {
         this.eventId,
         this.title,
@@ -15,7 +15,7 @@ class DeviceEvent {
         this.attendees,
       });
 
-  factory DeviceEvent.from(Event event) => DeviceEvent(
+  factory CalendarEvent.from(Event event) => CalendarEvent(
     event.calendarId,
     eventId: event.eventId,
     title: event.title,
@@ -26,7 +26,7 @@ class DeviceEvent {
     location: event.location,
     attendees: event.attendees.map((Attendee attendee) {
       return EventAttendee.from(attendee);
-    }),
+    }).toList(),
   );
 
   String eventId;

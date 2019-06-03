@@ -1,4 +1,4 @@
-# facebook_sdk_example
+DeviceCalendar Example
 
 [![language](https://img.shields.io/badge/language-Dart%202.3.0-informational.svg)](https://github.com/dart-lang/sdk)
 [![framework](https://img.shields.io/badge/framework-Flutter%201.5.4-informational.svg)](https://github.com/flutter/flutter)
