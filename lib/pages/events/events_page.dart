@@ -1,5 +1,6 @@
 import 'package:device_calendar_example/calendar_service/calendar_service.dart';
 import 'package:device_calendar_example/pages/events/events_page_bloc.dart';
+import 'package:device_calendar_example/pages/events/list_item/event_list_item.dart';
 import 'package:device_calendar_example/pages/events/states/events_state.dart';
 import 'package:flutter/material.dart';
 
@@ -17,12 +18,12 @@ class EventsPage extends StatefulWidget {
 }
 
 class _EventsPageState extends State<EventsPage> {
-
   @override
   void initState() {
     super.initState();
     widget._mainPageBloc.loadEvents();
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -83,31 +84,7 @@ class _EventsPageState extends State<EventsPage> {
         itemCount: events.length,
         itemBuilder: (BuildContext context, int index) {
           final CalendarEvent event = events[index];
-          return Padding(
-            padding: const EdgeInsets.only(left: 8, right: 8, top: 8),
-            child: Card(
-              color: Colors.deepPurple,
-              child: InkWell(
-                splashColor: Colors.green,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: <Widget>[
-                    Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: Text(
-                        '${event.title}\n${event.description}\n${event.location}\n${event.start}\n${event.attendees}',
-                        style: TextStyle(color: Colors.white),
-                      ),
-                    ),
-                  ],
-                ),
-                onTap: () {
-                  print('selected: $index');
-                },
-              ),
-            ),
-          );
+          return EventListItem(event: event);
         },
       ),
     );

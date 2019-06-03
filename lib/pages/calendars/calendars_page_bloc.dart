@@ -27,8 +27,6 @@ class _CalendarsPageBlocImpl implements CalendarsPageBloc {
 
   @override
   void loadCalendars() {
-    print('Load calendars');
-
     _calendarsController.add(CalendarsLoading());
     calendarService.calendars.then(
       (Result<List<DeviceCalendar>> result) {
