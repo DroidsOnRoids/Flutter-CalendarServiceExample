@@ -26,7 +26,7 @@ abstract class CalendarService {
 
 class _CalendarServiceImpl implements CalendarService {
   final c.DeviceCalendarPlugin _deviceCalendarPlugin = c.DeviceCalendarPlugin();
-
+  
   @override
   Future<Result<List<DeviceCalendar>>> get calendars async {
     try {
@@ -35,8 +35,11 @@ class _CalendarServiceImpl implements CalendarService {
       return Result<List<DeviceCalendar>>.error(e);
     }
 
-    return _callFuture(
-      _deviceCalendarPlugin.retrieveCalendars(),
+    final c.Result<List<c.Calendar>> calendarsResult =
+        await _deviceCalendarPlugin.retrieveCalendars();
+
+    return _mapResult(
+      calendarsResult,
       mappingFunction: (List<c.Calendar> calendars) {
         return calendars.map((c.Calendar event) {
           return DeviceCalendar.from(event);
@@ -56,9 +59,11 @@ class _CalendarServiceImpl implements CalendarService {
       return Result<List<CalendarEvent>>.error(e);
     }
 
-    return _callFuture(
-      _deviceCalendarPlugin.retrieveEvents(
-          calendarId, getEventsParams.retrieveEventsParams),
+    final c.Result<List<c.Event>> eventsResult = await _deviceCalendarPlugin
+        .retrieveEvents(calendarId, getEventsParams.retrieveEventsParams);
+
+    return _mapResult(
+      eventsResult,
       mappingFunction: (List<c.Event> events) {
         return events.map((c.Event event) {
           return CalendarEvent.from(event);
@@ -75,7 +80,10 @@ class _CalendarServiceImpl implements CalendarService {
       return Result<String>.error(e);
     }
 
-    return _callFuture(_deviceCalendarPlugin.createOrUpdateEvent(event));
+    final c.Result<String> modificationResult =
+        await _deviceCalendarPlugin.createOrUpdateEvent(event);
+
+    return _mapResult(modificationResult);
   }
 
   @override
@@ -86,20 +94,21 @@ class _CalendarServiceImpl implements CalendarService {
       return Result<bool>.error(e);
     }
 
-    return _callFuture(_deviceCalendarPlugin.deleteEvent(calendarId, eventId));
+    final c.Result<bool> deletionResult =
+        await _deviceCalendarPlugin.deleteEvent(calendarId, eventId);
+
+    return _mapResult(deletionResult);
   }
 
   /// Private methods
 
-  Future<Result<OutputType>> _callFuture<InputType, OutputType>(
-      Future<c.Result<InputType>> futureMethod,
+  Future<Result<OutputType>> _mapResult<InputType, OutputType>(
+      c.Result<InputType> result,
       {OutputType Function(InputType) mappingFunction}) async {
     if (OutputType != InputType) {
       assert(mappingFunction != null);
     }
-
-    final c.Result<InputType> result = await futureMethod;
-
+    
     if (result.isSuccess && result.data != null) {
       final OutputType output = (InputType == OutputType)
           ? result.data
